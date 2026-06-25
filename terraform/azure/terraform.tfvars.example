@@ -1,0 +1,8 @@
+azure_subscription_id  = "00000000-0000-0000-0000-000000000000"
+azure_tenant_id          = "00000000-0000-0000-0000-000000000000"
+azure_location           = "eastus"
+azure_name_prefix        = "scbprod"
+environment              = "production"
+project                  = "secure-baseline"
+owner                    = "platform-team"
+terraform_sp_object_id   = "00000000-0000-0000-0000-000000000000"

@@ -1,0 +1,13 @@
+metadata:
+  id: "CUSTOM_AWS_CLOUDTRAIL_VALIDATION"
+  name: "CloudTrail log file validation must be enabled"
+  category: "LOGGING"
+  framework: "terraform"
+
+definition:
+  cond_type: "attribute"
+  resource_types:
+    - "aws_cloudtrail"
+  attribute: "enable_log_file_validation"
+  operator: "equals"
+  value: true

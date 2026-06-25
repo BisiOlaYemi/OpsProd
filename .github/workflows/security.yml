@@ -1,0 +1,110 @@
+name: security
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+  security-events: write
+
+jobs:
+  terraform:
+    name: Terraform (${{ matrix.cloud }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        cloud: [aws, gcp, azure]
+    defaults:
+      run:
+        working-directory: terraform/${{ matrix.cloud }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.9.0
+
+      - name: Format check
+        run: terraform fmt -check -recursive -diff
+
+      - name: Init (local backend override)
+        run: terraform init -backend=false
+
+      - name: Validate
+        run: terraform validate
+
+  iac-scan:
+    name: IaC security scan
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Checkov
+        uses: bridgecrewio/checkov-action@v12
+        with:
+          directory: terraform/
+          framework: terraform
+          soft_fail: false
+          config_file: .checkov.yml
+
+      - name: Trivy config scan
+        uses: aquasecurity/trivy-action@0.28.0
+        with:
+          scan-type: config
+          scan-ref: .
+          severity: HIGH,CRITICAL
+          exit-code: 1
+
+  docker:
+    name: Docker build & scan
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Hadolint
+        uses: hadolint/hadolint-action@v3.1.0
+        with:
+          dockerfile: docker/examples/fastapi/Dockerfile
+          config: docker/.hadolint.yaml
+
+      - name: Hadolint nginx
+        uses: hadolint/hadolint-action@v3.1.0
+        with:
+          dockerfile: docker/examples/nginx-unprivileged/Dockerfile
+          config: docker/.hadolint.yaml
+
+      - name: Build fastapi
+        run: docker build -t secure-api:ci docker/examples/fastapi
+
+      - name: Build nginx
+        run: docker build -t secure-nginx:ci docker/examples/nginx-unprivileged
+
+      - name: Trivy image scan (fastapi)
+        uses: aquasecurity/trivy-action@0.28.0
+        with:
+          image-ref: secure-api:ci
+          severity: HIGH,CRITICAL
+          exit-code: 1
+
+      - name: Trivy image scan (nginx)
+        uses: aquasecurity/trivy-action@0.28.0
+        with:
+          image-ref: secure-nginx:ci
+          severity: HIGH,CRITICAL
+          exit-code: 1
+
+  secrets:
+    name: Secret detection
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Gitleaks
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
