@@ -41,6 +41,17 @@ variable "log_retention_days" {
   default     = 365
 }
 
+variable "terraform_sp_object_id" {
+  description = "Object ID of the Terraform service principal for Key Vault access."
+  type        = string
+}
+
+variable "security_contact_email" {
+  description = "Email address for security center notifications."
+  type        = string
+  default     = "security@example.com"
+}
+
 variable "azure_name_prefix" {
   description = "Short globally unique prefix for Azure resources with strict name limits (3-8 lowercase alphanumeric)."
   type        = string

@@ -79,9 +79,8 @@ resource "azurerm_monitor_diagnostic_setting" "storage_audit" {
     category = "StorageDelete"
   }
 
-  metric {
+  enabled_metric {
     category = "Transaction"
-    enabled  = true
   }
 }
 
@@ -192,7 +191,8 @@ resource "azurerm_security_center_subscription_pricing" "defender_storage" {
 }
 
 resource "azurerm_security_center_contact" "security" {
-  email               = "security@${var.project}.example.com"
+  name                = "Security Contact"
+  email               = var.security_contact_email
   phone               = "+10000000000"
   alert_notifications = true
   alerts_to_admins    = true
@@ -201,12 +201,14 @@ resource "azurerm_security_center_contact" "security" {
 
 resource "azurerm_subscription_policy_assignment" "storage_https" {
   name                 = "${var.project}-${var.environment}-storage-https"
+  subscription_id      = "/subscriptions/${var.azure_subscription_id}"
   policy_definition_id = "/providers/Microsoft.Authorization/policyDefinitions/404c6381-a422-445a-9271-5890516005cd"
   display_name         = "Secure transfer required for storage accounts"
 }
 
 resource "azurerm_subscription_policy_assignment" "storage_public" {
   name                 = "${var.project}-${var.environment}-no-public-blob"
+  subscription_id      = "/subscriptions/${var.azure_subscription_id}"
   policy_definition_id = "/providers/Microsoft.Authorization/policyDefinitions/1c6e92c9-99f0-4e55-84cf-897b72ebfbb6"
   display_name         = "Storage accounts should prevent public access"
 }

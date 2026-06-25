@@ -193,19 +193,23 @@ resource "google_project_service" "required" {
   disable_on_destroy = false
 }
 
-resource "google_scc_organization_notification_config" "high_severity" {
-  count = var.organization_id != "" ? 1 : 0
-
-  provider     = google-beta
-  config_id    = "${var.project}-${var.environment}-high-severity"
-  organization = var.organization_id
-  description  = "Route HIGH/CRITICAL SCC findings"
-  pubsub_topic = google_pubsub_topic.scc_findings.id
-
-  streaming_config {
-    filter = "severity=\"HIGH\" OR severity=\"CRITICAL\""
-  }
-}
+# Note: google_scc_organization_notification_config is not currently supported by the google-beta provider
+# This resource would be used to route SCC findings to Pub/Sub for further processing
+# Uncomment when provider support is available
+#
+# resource "google_scc_organization_notification_config" "high_severity" {
+#   count = var.organization_id != "" ? 1 : 0
+#
+#   provider     = google-beta
+#   config_id    = "${var.project}-${var.environment}-high-severity"
+#   organization = var.organization_id
+#   description  = "Route HIGH/CRITICAL SCC findings"
+#   pubsub_topic = google_pubsub_topic.scc_findings.id
+#
+#   streaming_config {
+#     filter = "severity=\"HIGH\" OR severity=\"CRITICAL\""
+#   }
+# }
 
 resource "google_pubsub_topic" "scc_findings" {
   name = "${var.project}-${var.environment}-scc-findings"
