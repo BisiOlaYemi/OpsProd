@@ -38,6 +38,10 @@ resource "azurerm_storage_account" "state" {
   allow_nested_items_to_be_public = false
   shared_access_key_enabled       = false
 
+  network_rules {
+    default_action = "Deny"
+  }
+
   blob_properties {
     versioning_enabled = true
   }

@@ -5,3 +5,6 @@ ignored:
 
 trustedRegistries:
   - nginxinc/nginx-unprivileged
+  - docker.io
+  - docker.io/library/python
+  - python
