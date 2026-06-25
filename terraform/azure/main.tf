@@ -47,6 +47,7 @@ resource "azurerm_storage_account" "audit" {
 
   network_rules {
     default_action = "Deny"
+    bypass         = "AzureServices"
   }
 
   blob_properties {

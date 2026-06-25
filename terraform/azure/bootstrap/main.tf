@@ -40,6 +40,7 @@ resource "azurerm_storage_account" "state" {
 
   network_rules {
     default_action = "Deny"
+    bypass         = "AzureServices"
   }
 
   blob_properties {

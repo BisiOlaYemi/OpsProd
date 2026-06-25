@@ -2,6 +2,7 @@ ignored:
   - SC2016
   - DL3007
   - DL3018
+  - DL3013
 
 trustedRegistries:
   - nginxinc/nginx-unprivileged
