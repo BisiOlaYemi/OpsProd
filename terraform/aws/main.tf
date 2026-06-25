@@ -240,11 +240,11 @@ resource "aws_security_group" "endpoint" {
   vpc_id      = aws_vpc.this.id
 
   ingress {
-    description     = "HTTPS from VPC"
-    from_port       = 443
-    to_port         = 443
-    protocol        = "tcp"
-    cidr_blocks     = [var.vpc_cidr]
+    description = "HTTPS from VPC"
+    from_port   = 443
+    to_port     = 443
+    protocol    = "tcp"
+    cidr_blocks = [var.vpc_cidr]
   }
 
   egress {
