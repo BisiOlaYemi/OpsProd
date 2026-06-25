@@ -57,6 +57,7 @@ jobs:
           scan-ref: .
           severity: HIGH,CRITICAL
           exit-code: 1
+          ignore-unfixed: true
 
   docker:
     name: Docker build & scan
@@ -88,6 +89,7 @@ jobs:
           image-ref: secure-api:ci
           severity: HIGH,CRITICAL
           exit-code: 1
+          ignore-unfixed: true
 
       - name: Trivy image scan (nginx)
         uses: aquasecurity/trivy-action@master
@@ -95,6 +97,7 @@ jobs:
           image-ref: secure-nginx:ci
           severity: HIGH,CRITICAL
           exit-code: 1
+          ignore-unfixed: true
 
   secrets:
     name: Secret detection

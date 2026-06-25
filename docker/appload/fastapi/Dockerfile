@@ -9,7 +9,8 @@ WORKDIR /build
 COPY requirements.txt .
 RUN pip install --no-cache-dir --upgrade pip \
     && apt-get update && apt-get upgrade -y \
-    && pip wheel --no-cache-dir --wheel-dir /wheels -r requirements.txt
+    && pip wheel --no-cache-dir --wheel-dir /wheels -r requirements.txt \
+    && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 FROM python:${PYTHON_VERSION}-slim-bookworm AS runtime
 
