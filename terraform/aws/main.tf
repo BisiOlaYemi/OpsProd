@@ -257,12 +257,57 @@ resource "aws_security_group" "endpoint" {
 }
 
 
+resource "aws_s3_bucket" "s3_logs" {
+  bucket = "${var.project}-${var.environment}-s3-logs-${data.aws_caller_identity.current.account_id}"
+
+  tags = {
+    Name = "${var.project}-${var.environment}-s3-logs"
+  }
+}
+
+resource "aws_s3_bucket_public_access_block" "s3_logs" {
+  bucket = aws_s3_bucket.s3_logs.id
+
+  block_public_acls       = true
+  block_public_policy     = true
+  ignore_public_acls      = true
+  restrict_public_buckets = true
+}
+
+resource "aws_s3_bucket_versioning" "s3_logs" {
+  bucket = aws_s3_bucket.s3_logs.id
+
+  versioning_configuration {
+    status = "Enabled"
+  }
+}
+
+resource "aws_s3_bucket_server_side_encryption_configuration" "s3_logs" {
+  bucket = aws_s3_bucket.s3_logs.id
+
+  rule {
+    apply_server_side_encryption_by_default {
+      sse_algorithm     = "aws:kms"
+      kms_master_key_id = aws_kms_key.platform.arn
+    }
+    bucket_key_enabled = true
+  }
+}
+
+
 resource "aws_s3_bucket" "audit" {
   bucket = "${var.project}-${var.environment}-audit-${data.aws_caller_identity.current.account_id}"
 
   tags = {
     Name = "${var.project}-${var.environment}-audit"
   }
+}
+
+resource "aws_s3_bucket_logging" "audit" {
+  bucket = aws_s3_bucket.audit.id
+
+  target_bucket = aws_s3_bucket.s3_logs.id
+  target_prefix = "audit-logs/"
 }
 
 resource "aws_s3_bucket_public_access_block" "audit" {
@@ -363,7 +408,7 @@ resource "aws_s3_bucket_policy" "audit" {
 
 resource "aws_cloudwatch_log_group" "cloudtrail" {
   name              = "/aws/cloudtrail/${var.project}-${var.environment}"
-  retention_in_days = 90
+  retention_in_days = 365
   kms_key_id        = aws_kms_key.platform.arn
 }
 

@@ -58,7 +58,7 @@ Copy outputs into `terraform/aws/backend.tf`, then deploy the baseline:
 
 ```bash
 cd ../
-cp terraform.tfvars.example terraform.tfvars   # edit with your values
+cp terraform.tfvars.example terraform.tfvars   
 terraform init
 terraform plan
 terraform apply
@@ -78,7 +78,7 @@ docker compose -f docker/compose/docker-compose.prod.yml up --build
 ### 3. Run security checks locally
 
 ```bash
-pip install pre-commit   # or: brew install pre-commit
+pip install pre-commit   
 pre-commit install
 pre-commit run --all-files
 ```

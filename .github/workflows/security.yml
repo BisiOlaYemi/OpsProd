@@ -67,20 +67,20 @@ jobs:
       - name: Hadolint
         uses: hadolint/hadolint-action@v3.1.0
         with:
-          dockerfile: docker/examples/fastapi/Dockerfile
+          dockerfile: docker/appload/fastapi/Dockerfile
           config: docker/.hadolint.yaml
 
       - name: Hadolint nginx
         uses: hadolint/hadolint-action@v3.1.0
         with:
-          dockerfile: docker/examples/nginx-unprivileged/Dockerfile
+          dockerfile: docker/appload/nginx-unprivileged/Dockerfile
           config: docker/.hadolint.yaml
 
       - name: Build fastapi
-        run: docker build -t secure-api:ci docker/examples/fastapi
+        run: docker build -t secure-api:ci docker/appload/fastapi
 
       - name: Build nginx
-        run: docker build -t secure-nginx:ci docker/examples/nginx-unprivileged
+        run: docker build -t secure-nginx:ci docker/appload/nginx-unprivileged
 
       - name: Trivy image scan (fastapi)
         uses: aquasecurity/trivy-action@master
